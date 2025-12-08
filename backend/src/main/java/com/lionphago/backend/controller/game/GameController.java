@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/game")
 @Tag(name = "赛事接口")
 public class GameController {
-    @Autowired
-    private GameService gameService;
+//    @Autowired
+//    private GameService gameService;
 
     /**
      * 赛事添加接口
@@ -34,11 +34,12 @@ public class GameController {
             return Result.error("赛事名称未指定");
         }
 
-        GameDTO r = gameService.gameAdd(gameAddRequest);
-        if (r.getGameId() == null) {
-            return Result.error("赛事添加失败。");
-        }
+//        GameDTO r = gameService.gameAdd(gameAddRequest);
+//                if (r.getGameId() == null) {
+//            return Result.error("赛事添加失败。");
+//        }
 
-        return Result.success(r);
+//        return Result.success(r);
+        return Result.error("WIP");
     }
 }
