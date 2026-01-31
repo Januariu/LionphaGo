@@ -22,14 +22,15 @@ public class GameServiceImpl implements GameService {
 
     /**
      * 添加赛事
+     * 
      * @param {@code gameAddRequest}
      * @return
      */
     public GameDTO gameAdd(GameDTO gameAddRequest) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("game_title",gameAddRequest.getGameTitle());
+        QueryWrapper<GameDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("game_title", gameAddRequest.getGameTitle());
         GameDTO gameDTO = gameMapper.selectOne(queryWrapper);
-        if(gameDTO != null) {
+        if (gameDTO != null) {
             // 如果发现有重名的赛事
             throw new GameAlreadyExsistException("存在相同姓名的赛事，请重新输入");
         }
@@ -40,13 +41,14 @@ public class GameServiceImpl implements GameService {
 
     /**
      * 删除赛事
+     * 
      * @param {@code gameName}
      */
     public void delete(String gameName) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("game_title",gameName);
+        QueryWrapper<GameDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("game_title", gameName);
         GameDTO gameDTO = gameMapper.selectOne(queryWrapper);
-        if(gameDTO == null){
+        if (gameDTO == null) {
             throw new GameDoesNotExsistException("不存在该赛事！");
         }
         gameMapper.deleteById(gameDTO.getGameId());
@@ -54,6 +56,7 @@ public class GameServiceImpl implements GameService {
 
     /**
      * 修改赛事
+     * 
      * @param {@code gameUpdateRequest}
      */
     public int update(GameDTO gameUpdateRequest) {
@@ -62,14 +65,15 @@ public class GameServiceImpl implements GameService {
 
     /**
      * 赛事分页查询
+     * 
      * @param {@code gamePageQueryDTO}
      * @return {@code IPage<GameDTO>}
      */
     public IPage<GameDTO> pageQuery(GamePageQueryDTO gamePageQueryDTO) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("game_title",gamePageQueryDTO.getGameTitle());
-        IPage<GameDTO> page = new Page<>(gamePageQueryDTO.getPage(),gamePageQueryDTO.getPageSize());
-        IPage<GameDTO> pageResult = gameMapper.selectPage(page,queryWrapper);
+        QueryWrapper<GameDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("game_title", gamePageQueryDTO.getGameTitle());
+        IPage<GameDTO> page = new Page<>(gamePageQueryDTO.getPage(), gamePageQueryDTO.getPageSize());
+        IPage<GameDTO> pageResult = gameMapper.selectPage(page, queryWrapper);
         return pageResult;
     }
 }
