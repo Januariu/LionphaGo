@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lionphago.backend.common.dto.RecordDTO;
+import com.lionphago.backend.common.dto.RecordPageQueryDTO;
 import com.lionphago.backend.exception.RecordAlreadyExistException;
 import com.lionphago.backend.exception.RecordDoesNotExistException;
 import com.lionphago.backend.mapper.RecordMapper;
@@ -14,23 +15,25 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-public class RecordServiceImpl implements RecordService{
+public class RecordServiceImpl implements RecordService {
     @Autowired
     private RecordMapper recordMapper;
 
     /**
      * 添加获奖记录
+     * 
      * @param {@code recordAddRequest}
      * @return
      */
     public RecordDTO add(RecordDTO recordAddRequest) {
         // 检索记录
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<RecordDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("game_id", recordAddRequest.getGameId())
-            .eq("gamer_id", recordAddRequest.getGamerId())
-            .apply("awards = {0}::jsonb", recordAddRequest.getAwards());
+                .eq("gamer_id", recordAddRequest.getGamerId());
         RecordDTO recordDTO = recordMapper.selectOne(queryWrapper);
-        if(recordDTO != null) throw new RecordAlreadyExsistException("奖项已经存在。");
+
+        if (recordDTO != null)
+            throw new RecordAlreadyExistException("奖项已经存在。");
 
         // 添加记录
         recordMapper.insert(recordAddRequest);
@@ -39,27 +42,30 @@ public class RecordServiceImpl implements RecordService{
 
     /**
      * 删除获奖记录
+     * 
      * @param {@code recordDelRequest}
      */
     public void delete(RecordDTO recordDelRequest) {
         // 检索记录
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<RecordDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("game_id", recordDelRequest.getGameId())
-            .eq("gamer_id", recordDelRequest.getGamerId())
-            .apply("awards = {0}::jsonb", recordDelRequest.getAwards());
+                .eq("gamer_id", recordDelRequest.getGamerId())
+                .apply("awards = {0}::jsonb", recordDelRequest.getAwards());
         RecordDTO recordDTO = recordMapper.selectOne(queryWrapper);
-        if(recordDTO == null) throw new RecordDoesNotExsistException("奖项不存在。");
+        if (recordDTO == null)
+            throw new RecordDoesNotExistException("奖项不存在。");
         // 删除记录
         recordMapper.delete(queryWrapper);
     }
 
     public int update(RecordDTO recordUpdateRequest) {
         // 检索记录
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<RecordDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("game_id", recordUpdateRequest.getGameId())
-            .eq("gamer_id", recordUpdateRequest.getGamerId());
+                .eq("gamer_id", recordUpdateRequest.getGamerId());
         RecordDTO recordDTO = recordMapper.selectOne(queryWrapper);
-        if(recordDTO == null) throw new RecordDoesNotExistException("奖项不存在。");
+        if (recordDTO == null)
+            throw new RecordDoesNotExistException("奖项不存在。");
 
         // 修改记录
         return recordMapper.update(recordUpdateRequest, queryWrapper);
@@ -71,9 +77,11 @@ public class RecordServiceImpl implements RecordService{
     public IPage<RecordDTO> pageQuery(RecordPageQueryDTO dto) {
         // 任意 gameId 或 gamerId
         QueryWrapper<RecordDTO> wrapper = new QueryWrapper<>();
-        if(dto.getGameId() != null) wrapper.eq("game_id", dto.getGameId());
-        if(dto.getGamerId() != null) wrapper.eq("gamer_id", dto.getGamerId());
-        
+        if (dto.getGameId() != null)
+            wrapper.eq("game_id", dto.getGameId());
+        if (dto.getGamerId() != null)
+            wrapper.eq("gamer_id", dto.getGamerId());
+
         // 返回分页查询结果
         IPage<RecordDTO> page = new Page<>(dto.getPage(), dto.getPageSize());
         return recordMapper.selectPage(page, wrapper);
